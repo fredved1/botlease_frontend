@@ -1,5 +1,6 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+node_modules/@next/swc-darwin-arm64/next-swc.darwin-arm64.node
 
 # Ignore node_modules in root and all subdirectories
 node_modules/
