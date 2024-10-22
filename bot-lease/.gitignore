@@ -1,6 +1,11 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# ... existing code ...
+
+# Exclude large Next.js SWC binary
 node_modules/@next/swc-darwin-arm64/next-swc.darwin-arm64.node
+
+# ... existing code ...
 
 # Ignore node_modules in root and all subdirectories
 node_modules/
@@ -53,3 +58,6 @@ next-env.d.ts
 
    node_modules/
    .next/
+
+# Voeg deze regel toe als hij er nog niet in staat
+.env.local

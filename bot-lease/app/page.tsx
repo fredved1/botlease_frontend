@@ -1,6 +1,50 @@
+'use client'
+
 import Image from "next/image";
+import { useState, useEffect } from 'react'
+import { supabase } from '@/lib/supabaseClient'
 
 export default function Home() {
+  const [email, setEmail] = useState('')
+  const [message, setMessage] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  useEffect(() => {
+    const checkSupabaseConnection = async () => {
+      const { data, error } = await supabase.from('subscribers').select('count').single()
+      if (error) {
+        console.error('Supabase connection error:', error)
+      } else {
+        console.log('Supabase connection successful')
+      }
+    }
+    checkSupabaseConnection()
+  }, [])
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+
+    try {
+      console.log('Attempting to insert email:', email)
+      const { data, error } = await supabase
+        .from('subscribers')
+        .insert([{ email: email }])
+
+      console.log('Supabase response:', { data, error })
+
+      if (error) throw error
+
+      setMessage('check!') // Dit zet het bericht op "check!"
+      setEmail('')
+    } catch (error) {
+      console.error('Error:', error)
+      setMessage('Er is een fout opgetreden. Probeer het later opnieuw.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
@@ -48,6 +92,32 @@ export default function Home() {
             Read our docs
           </a>
         </div>
+
+        {/* New signup section */}
+        <section id="signup" className="w-full max-w-md mt-12 p-8 bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-lg">
+          <h2 className="text-2xl font-bold mb-4">Wees de Eerste die het Ervaart</h2>
+          <p className="text-sm mb-6">
+            Schrijf u in voor onze wachtlijst en ontvang exclusieve updates over onze lancering.
+          </p>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <input
+              type="email"
+              placeholder="Uw e-mailadres"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="bg-white text-black p-2 rounded"
+            />
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="bg-blue-500 text-white p-2 rounded disabled:bg-gray-400"
+            >
+              {isSubmitting ? 'Bezig...' : 'Inschrijven'}
+            </button>
+          </form>
+          {message && <p className="mt-4 text-sm">{message}</p>}
+        </section>
       </main>
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
         <a
